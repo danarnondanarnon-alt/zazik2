@@ -1,0 +1,30 @@
+.main { max-width: 480px; margin: 0 auto; padding: 20px; }
+.card {
+  background: #fff; border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); padding: 20px;
+  animation: fadeUp 0.3s ease;
+}
+.label {
+  display: block; font-size: 13px; font-weight: 700;
+  color: var(--steel); margin-bottom: 10px;
+}
+.input {
+  width: 100%; padding: 14px 16px;
+  border: 2px solid var(--sand); border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif; font-size: 15px; color: var(--ink);
+  background: #fafaf8; transition: border-color 0.15s;
+}
+.input:focus { outline: none; border-color: var(--rust); }
+.hint {
+  font-size: 13px; color: var(--mid); margin-top: 8px; margin-bottom: 20px;
+}
+.saveBtn {
+  width: 100%; padding: 16px;
+  background: var(--rust); color: #fff;
+  border: none; border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif; font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.saveBtn:hover { background: var(--rust-dark); }
+.saveBtn:active { transform: scale(0.97); }
+.saveBtn:disabled { opacity: 0.6; }

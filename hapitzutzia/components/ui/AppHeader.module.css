@@ -1,0 +1,51 @@
+.header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 56px;
+}
+
+.dark {
+  background: #000;
+}
+
+.center { flex: 1; text-align: center; }
+.left, .right { width: 36px; flex-shrink: 0; }
+
+.logo {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.logoRed { color: var(--rust); }
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--paper);
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--paper);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.backBtn:hover { background: rgba(255,255,255,0.1); }

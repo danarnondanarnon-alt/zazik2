@@ -1,0 +1,78 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.thumb {
+  aspect-ratio: 1;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--sand);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.thumb:active { opacity: 0.8; }
+
+.videoThumb {
+  width: 100%;
+  height: 100%;
+  background: var(--steel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24px;
+}
+
+.empty {
+  color: var(--mid);
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Lightbox */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  position: relative;
+  max-width: 100%;
+  max-height: 90vh;
+}
+
+.fullImg {
+  max-width: 100%;
+  max-height: 85vh;
+  border-radius: var(--radius);
+  display: block;
+}
+
+.closeBtn {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--rust);
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

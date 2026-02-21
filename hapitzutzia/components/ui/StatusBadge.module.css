@@ -1,0 +1,17 @@
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.large {
+  font-size: 15px;
+  padding: 6px 16px;
+}
+
+.waiting  { background: #fff3cd; color: #856404; }
+.working  { background: var(--blue-light); color: var(--blue); }
+.ready    { background: var(--ok-light); color: var(--ok); }
+.archived { background: #e2e3e5; color: #41464b; }

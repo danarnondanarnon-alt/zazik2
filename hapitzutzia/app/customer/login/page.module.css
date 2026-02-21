@@ -1,0 +1,90 @@
+.main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.greeting {
+  margin-bottom: 32px;
+  animation: fadeUp 0.3s ease;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.sub {
+  color: var(--mid);
+  font-size: 15px;
+}
+
+.form {
+  animation: fadeUp 0.3s 0.05s ease both;
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--steel);
+  margin-bottom: 8px;
+  margin-top: 20px;
+}
+.label:first-of-type { margin-top: 0; }
+
+.input {
+  width: 100%;
+  padding: 15px 16px;
+  border: 2px solid var(--sand);
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  color: var(--ink);
+  background: #fafaf8;
+  transition: border-color 0.15s;
+  direction: rtl;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--rust);
+  background: #fff;
+}
+
+.error {
+  color: var(--rust);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.submitBtn {
+  margin-top: 28px;
+  width: 100%;
+  padding: 18px;
+  background: var(--rust);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.submitBtn:hover { background: var(--rust-dark); }
+.submitBtn:active { transform: scale(0.97); }
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.newRepair {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--mid);
+  animation: fadeUp 0.3s 0.1s ease both;
+}
+.link {
+  color: var(--rust);
+  font-weight: 700;
+}
