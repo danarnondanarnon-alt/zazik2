@@ -1,7 +1,4 @@
-.loading {
-  display: flex; align-items: center; justify-content: center;
-  height: 200px;
-}
+.loading { display: flex; align-items: center; justify-content: center; height: 200px; }
 .spinner {
   width: 40px; height: 40px;
   border: 3px solid var(--sand); border-top-color: var(--rust);
@@ -9,71 +6,39 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.notFound {
-  text-align: center; padding: 60px 20px;
-  font-size: 18px; color: var(--mid);
-}
+.notFound { text-align: center; padding: 60px 20px; font-size: 18px; color: var(--mid); }
 
 .successBanner {
-  background: var(--ok);
-  color: #fff;
-  text-align: center;
-  padding: 14px;
-  font-weight: 700;
-  font-size: 15px;
-  animation: fadeIn 0.3s ease;
+  background: var(--ok); color: #fff; text-align: center;
+  padding: 14px; font-weight: 700; font-size: 15px;
 }
 
 .statusBar {
-  background: var(--ink);
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: var(--ink); padding: 16px 20px;
+  display: flex; justify-content: space-between; align-items: center;
 }
-.statusBarLabel {
-  font-size: 11px; color: #aaa; margin-bottom: 4px; font-weight: 600;
-}
+.statusBarLabel { font-size: 11px; color: #aaa; margin-bottom: 4px; font-weight: 600; }
 .priceBlock { text-align: left; }
 .priceBig { font-size: 28px; font-weight: 900; color: var(--rust); }
 
-.main {
-  max-width: 480px; margin: 0 auto; padding: 20px;
-}
+.main { max-width: 480px; margin: 0 auto; padding: 20px; }
 
 /* Steps */
-.steps {
-  display: flex; margin-bottom: 20px;
-  animation: fadeUp 0.3s ease;
-}
-.step {
-  flex: 1; position: relative; display: flex;
-  flex-direction: column; align-items: center;
-}
+.steps { display: flex; margin-bottom: 20px; animation: fadeUp 0.3s ease; }
+.step { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; }
 .dot {
   width: 30px; height: 30px; border-radius: 50%;
   background: var(--sand); color: var(--mid);
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700;
-  position: relative; z-index: 2;
-  margin-bottom: 6px;
+  font-size: 13px; font-weight: 700; position: relative; z-index: 2; margin-bottom: 6px;
 }
 .done .dot { background: var(--rust); color: #fff; }
-
 .line {
-  position: absolute;
-  top: 15px;
-  right: 50%;
-  width: 100%;
-  height: 2px;
-  background: var(--sand);
-  z-index: 1;
+  position: absolute; top: 15px; right: 50%; width: 100%;
+  height: 2px; background: var(--sand); z-index: 1;
 }
 .done .line { background: var(--rust); }
-
-.stepLabel {
-  font-size: 11px; font-weight: 600; color: var(--mid); text-align: center;
-}
+.stepLabel { font-size: 11px; font-weight: 600; color: var(--mid); text-align: center; }
 .done .stepLabel { color: var(--ink); }
 
 /* Card */
@@ -82,14 +47,12 @@
   box-shadow: var(--shadow-sm); padding: 18px;
   margin-bottom: 16px; animation: fadeUp 0.3s 0.05s ease both;
 }
-.infoGrid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;
-}
+.infoGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 .infoKey { font-size: 11px; color: var(--mid); font-weight: 700; margin-bottom: 2px; }
 .infoVal { font-size: 15px; font-weight: 700; }
-.urgent  { color: var(--rust); }
+.urgentText { color: var(--rust); }
 .divider { border: none; border-top: 1px solid var(--sand); margin: 14px 0; }
-.desc    { font-size: 14px; line-height: 1.6; color: var(--steel); }
+.desc { font-size: 14px; line-height: 1.6; color: var(--steel); }
 
 /* Sections */
 .section { margin-bottom: 16px; animation: fadeUp 0.3s 0.1s ease both; }
@@ -99,39 +62,68 @@
   display: inline-block;
 }
 
-/* Notice */
+/* Notice + pay */
 .notice {
   background: var(--ok-light); border-right: 4px solid var(--ok);
   border-radius: var(--radius); padding: 14px 16px;
   font-size: 14px; margin-bottom: 12px; font-weight: 600;
 }
-
 .payBtn {
   display: block; width: 100%; padding: 16px;
-  background: var(--ink); color: var(--paper);
-  text-align: center; border-radius: var(--radius);
-  font-size: 16px; font-weight: 700; text-decoration: none;
-  transition: all 0.15s;
+  background: var(--ink); color: var(--paper); text-align: center;
+  border-radius: var(--radius); font-size: 16px; font-weight: 700;
+  text-decoration: none; transition: all 0.15s;
 }
 .payBtn:active { transform: scale(0.97); }
 
-/* WhatsApp */
-.waBtn {
-  width: 100%; padding: 16px;
-  background: #25d366; color: #fff;
-  border: none; border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif; font-size: 16px; font-weight: 700;
-  cursor: pointer; margin-bottom: 10px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: all 0.15s;
+/* Messages */
+.messages {
+  background: #f8f7f3; border-radius: var(--radius);
+  padding: 16px; min-height: 120px; margin-bottom: 12px;
+  max-height: 320px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px;
 }
-.waBtn:active { background: #1da851; transform: scale(0.97); }
 
-.copyBtn {
-  width: 100%; padding: 15px;
-  background: var(--sand); color: var(--ink);
-  border: none; border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 700;
-  cursor: pointer; transition: all 0.15s;
+.noMessages { font-size: 14px; color: var(--mid); text-align: center; padding: 16px 0; }
+
+.bubble {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  line-height: 1.5;
 }
-.copyBtn:active { transform: scale(0.97); }
+.bubbleCustomer {
+  align-self: flex-end;
+  background: var(--rust);
+  color: #fff;
+  border-bottom-left-radius: 4px;
+}
+.bubbleAdmin {
+  align-self: flex-start;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--sand);
+  border-bottom-right-radius: 4px;
+}
+.bubbleText { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.bubbleTime { font-size: 11px; opacity: 0.65; }
+
+.msgInput {
+  display: flex; gap: 10px; align-items: center;
+}
+.msgField {
+  flex: 1; padding: 13px 16px;
+  border: 2px solid var(--sand); border-radius: var(--radius);
+  font-family: var(--font-rubik), sans-serif; font-size: 15px;
+  background: #fff; direction: rtl; transition: border-color 0.15s;
+}
+.msgField:focus { outline: none; border-color: var(--rust); }
+
+.msgSend {
+  padding: 13px 18px; background: var(--rust); color: #fff;
+  border: none; border-radius: var(--radius);
+  font-family: var(--font-rubik), sans-serif; font-size: 15px; font-weight: 700;
+  cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+}
+.msgSend:disabled { opacity: 0.5; cursor: not-allowed; }
+.msgSend:active { transform: scale(0.95); }

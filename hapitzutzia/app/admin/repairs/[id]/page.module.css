@@ -8,13 +8,11 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Customer card */
 .customerCard {
   background: var(--ink); color: var(--paper);
   border-radius: var(--radius); padding: 18px;
-  display: flex; justify-content: space-between;
-  align-items: flex-start; margin-bottom: 10px;
-  border-top: 4px solid var(--rust);
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 10px; border-top: 4px solid var(--rust);
   animation: fadeUp 0.3s ease;
 }
 .custName  { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
@@ -26,78 +24,201 @@
 .descBox {
   background: var(--sand); border-radius: var(--radius);
   padding: 14px 16px; font-size: 14px; line-height: 1.6;
-  margin-bottom: 16px; color: var(--steel);
+  margin-bottom: 14px; color: var(--steel);
   animation: fadeUp 0.3s 0.05s ease both;
 }
 
-/* Card */
 .card {
   background: #fff; border-radius: var(--radius);
   box-shadow: var(--shadow-sm); padding: 18px;
   margin-bottom: 14px; animation: fadeUp 0.3s 0.08s ease both;
 }
 .cardTitle {
-  font-size: 14px; font-weight: 900; margin-bottom: 14px;
+  font-size: 13px; font-weight: 900; margin-bottom: 14px;
   color: var(--steel); text-transform: uppercase; letter-spacing: 0.5px;
 }
 
 /* Status pills */
 .statusPills { display: flex; gap: 8px; flex-wrap: wrap; }
 .pill {
-  padding: 9px 14px; border-radius: 20px;
-  border: 2px solid var(--sand); background: #fafaf8;
-  font-family: 'Heebo', sans-serif; font-size: 13px; font-weight: 700;
-  cursor: pointer; transition: all 0.12s;
+  padding: 9px 14px; border-radius: 20px; border: 2px solid var(--sand);
+  background: #fafaf8; font-family: var(--font-rubik), sans-serif;
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.12s;
 }
-.pill:disabled { opacity: 0.5; cursor: not-allowed; }
+.pill:disabled { opacity: 0.5; }
 .pillActive { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
 /* Price */
 .priceRow { display: flex; align-items: center; gap: 10px; }
 .shekel   { font-size: 22px; font-weight: 900; color: var(--rust); flex-shrink: 0; }
 .priceInput {
-  flex: 1; padding: 13px 14px;
-  border: 2px solid var(--sand); border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif; font-size: 22px; font-weight: 900;
-  color: var(--ink); text-align: center; direction: ltr;
-  transition: border-color 0.15s;
+  flex: 1; padding: 13px 14px; border: 2px solid var(--sand);
+  border-radius: var(--radius); font-family: var(--font-rubik), sans-serif;
+  font-size: 22px; font-weight: 900; color: var(--ink);
+  text-align: center; direction: ltr; transition: border-color 0.15s;
 }
 .priceInput:focus { outline: none; border-color: var(--rust); }
 .saveBtn {
   padding: 13px 18px; background: var(--rust); color: #fff;
-  border: none; border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 700;
-  cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+  border: none; border-radius: var(--radius); font-family: var(--font-rubik), sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer; flex-shrink: 0;
 }
-.saveBtn:active { transform: scale(0.95); }
 .saveBtn:disabled { opacity: 0.6; }
 
-/* Upload */
-.uploadRow { display: flex; gap: 10px; margin-top: 14px; }
+/* Media */
 .uploadBtn {
-  flex: 1; padding: 12px; border: 2px dashed var(--sand-dark);
-  border-radius: var(--radius); background: #fafaf8;
-  font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 700;
-  color: var(--steel); cursor: pointer; text-align: center;
-  transition: all 0.15s;
+  margin-top: 12px; width: 100%; padding: 13px;
+  border: 2px dashed var(--sand-dark); border-radius: var(--radius);
+  background: #fafaf8; font-family: var(--font-rubik), sans-serif;
+  font-size: 14px; font-weight: 600; color: var(--steel);
+  cursor: pointer; text-align: center; transition: all 0.15s;
 }
 .uploadBtn:active { border-color: var(--rust); }
 .uploadBtn:disabled { opacity: 0.6; }
-.uploading { font-size: 13px; color: var(--mid); margin-top: 8px; text-align: center; }
 
-/* Details grid */
-.detailsGrid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+/* Details */
+.detailsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Messages */
+.messages {
+  background: #f8f7f3; border-radius: var(--radius);
+  padding: 14px; min-height: 100px; margin-bottom: 12px;
+  max-height: 280px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px;
 }
+.noMessages { font-size: 13px; color: var(--mid); text-align: center; padding: 12px 0; }
 
-/* WhatsApp */
+.bubble { max-width: 85%; padding: 10px 14px; border-radius: 12px; line-height: 1.5; }
+.bubbleAdmin {
+  align-self: flex-end; background: var(--ink); color: var(--paper);
+  border-bottom-left-radius: 4px;
+}
+.bubbleCustomer {
+  align-self: flex-start; background: #fff; color: var(--ink);
+  border: 1px solid var(--sand); border-bottom-right-radius: 4px;
+}
+.bubbleText { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.bubbleTime { font-size: 11px; opacity: 0.65; }
+
+.msgInput { display: flex; gap: 10px; }
+.msgField {
+  flex: 1; padding: 12px 14px; border: 2px solid var(--sand);
+  border-radius: var(--radius); font-family: var(--font-rubik), sans-serif;
+  font-size: 14px; background: #fff; direction: rtl; transition: border-color 0.15s;
+}
+.msgField:focus { outline: none; border-color: var(--rust); }
+.msgSend {
+  padding: 12px 16px; background: var(--rust); color: #fff;
+  border: none; border-radius: var(--radius); font-family: var(--font-rubik), sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+}
+.msgSend:disabled { opacity: 0.5; }
+
+/* WA / Copy */
 .waBtn {
-  width: 100%; padding: 16px;
-  background: #25d366; color: #fff;
-  border: none; border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif; font-size: 16px; font-weight: 700;
-  cursor: pointer; display: flex; align-items: center;
-  justify-content: center; gap: 8px; transition: all 0.15s;
-  animation: fadeUp 0.3s 0.15s ease both;
+  width: 100%; padding: 15px; background: #25d366; color: #fff;
+  border: none; border-radius: var(--radius); font-family: var(--font-rubik), sans-serif;
+  font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.15s; animation: fadeUp 0.3s 0.15s ease both;
 }
 .waBtn:active { background: #1da851; transform: scale(0.97); }
+
+.copyBtn {
+  width: 100%; padding: 14px; background: var(--sand); color: var(--ink);
+  border: none; border-radius: var(--radius); font-family: var(--font-rubik), sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+  animation: fadeUp 0.3s 0.18s ease both;
+}
+.copyBtn:active { transform: scale(0.97); }
+
+/* ── Delete ── */
+.dangerZone {
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--sand);
+}
+
+.deleteBtn {
+  width: 100%; padding: 14px;
+  background: transparent;
+  border: 2px solid #e53935;
+  color: #e53935;
+  border-radius: var(--radius);
+  font-family: var(--font-rubik), sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.deleteBtn:hover { background: #ffeaea; }
+.deleteBtn:active { transform: scale(0.97); }
+
+/* Modal */
+.modalOverlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 500;
+  display: flex; align-items: flex-end;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  background: #fff;
+  width: 100%; max-width: 480px; margin: 0 auto;
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 28px 24px 40px;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modalIcon  { font-size: 40px; text-align: center; margin-bottom: 12px; }
+.modalTitle {
+  font-size: 22px; font-weight: 900; text-align: center;
+  margin-bottom: 12px; color: #e53935;
+}
+.modalText  {
+  font-size: 14px; line-height: 1.6; color: var(--steel);
+  text-align: center; margin-bottom: 20px;
+}
+.modalPrompt {
+  font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--ink);
+}
+
+.confirmInput {
+  width: 100%; padding: 14px 16px;
+  border: 2px solid #e53935; border-radius: var(--radius);
+  font-family: var(--font-rubik), sans-serif; font-size: 18px;
+  font-weight: 700; text-align: center; color: var(--ink);
+  background: #fff; margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+.confirmInput:focus { outline: none; }
+
+.modalActions { display: flex; gap: 10px; }
+
+.confirmDeleteBtn {
+  flex: 1; padding: 16px;
+  background: #e53935; color: #fff; border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-rubik), sans-serif;
+  font-size: 16px; font-weight: 900;
+  cursor: pointer; transition: all 0.15s;
+}
+.confirmDeleteBtn:disabled {
+  background: #ccc; cursor: not-allowed;
+}
+.confirmDeleteBtn:not(:disabled):active { transform: scale(0.97); }
+
+.cancelBtn {
+  flex: 1; padding: 16px;
+  background: var(--sand); color: var(--ink); border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-rubik), sans-serif;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.cancelBtn:active { transform: scale(0.97); }
+.cancelBtn:disabled { opacity: 0.5; cursor: not-allowed; }

@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import AppHeader from '@/components/ui/AppHeader';
-import StatusBadge from '@/components/ui/StatusBadge';
 import MediaGallery from '@/components/ui/MediaGallery';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { Repair, RepairStatus, STATUS_LABELS, BOARD_TYPE_LABELS, DELIVERY_LABELS } from '@/lib/types';
@@ -11,24 +10,44 @@ import { uploadRepairMedia } from '@/lib/media';
 import styles from './page.module.css';
 
 const STATUSES: RepairStatus[] = ['waiting', 'working', 'ready', 'archived'];
+const ADMIN_PHONE = '0525950685';
+
+interface Message {
+  id: string;
+  author_type: 'customer' | 'admin';
+  text: string;
+  created_at: string;
+  read_by_admin: boolean;
+}
 
 export default function AdminRepairPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
+  const router  = useRouter();
 
-  const [repair, setRepair] = useState<Repair | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [price, setPrice] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [repair, setRepair]           = useState<Repair | null>(null);
+  const [loading, setLoading]         = useState(true);
+  const [price, setPrice]             = useState('');
+  const [saving, setSaving]           = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const imgRef = useRef<HTMLInputElement>(null);
-  const vidRef = useRef<HTMLInputElement>(null);
+  const [saved, setSaved]             = useState(false);
+  const [messages, setMessages]       = useState<Message[]>([]);
+  const [newMsg, setNewMsg]           = useState('');
+  const [sendingMsg, setSendingMsg]   = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm]     = useState('');
+  const [deleting, setDeleting]               = useState(false);
+  const mediaRef                      = useRef<HTMLInputElement>(null);
+  const messagesEndRef                = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isAdminAuthenticated()) { router.replace('/admin'); return; }
     loadRepair();
+    loadMessages();
   }, [id, router]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   async function loadRepair() {
     setLoading(true);
@@ -38,8 +57,27 @@ export default function AdminRepairPage() {
     setLoading(false);
   }
 
+  async function loadMessages() {
+    // Mark customer messages as read when admin opens
+    await fetch(`/api/repairs/${id}/messages`, { method: 'PATCH' });
+    const data = await fetch(`/api/repairs/${id}/messages`).then(r => r.json());
+    setMessages(Array.isArray(data) ? data : []);
+  }
+
+  async function sendAdminMessage() {
+    if (!newMsg.trim()) return;
+    setSendingMsg(true);
+    await fetch(`/api/repairs/${id}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: newMsg.trim(), author_type: 'admin' }),
+    });
+    setNewMsg('');
+    await loadMessages();
+    setSendingMsg(false);
+  }
+
   async function updateStatus(status: RepairStatus) {
-    if (!repair) return;
     setSaving(true);
     await fetch(`/api/repairs/${id}/status`, {
       method: 'PATCH',
@@ -63,8 +101,13 @@ export default function AdminRepairPage() {
     await loadRepair();
   }
 
-  async function handleMediaUpload(images: File[], videos: File[]) {
+  async function handleMediaUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const incoming = Array.from(e.target.files ?? []);
+    if (!incoming.length) return;
+    e.target.value = '';
     setUploadLoading(true);
+    const images = incoming.filter(f => f.type.startsWith('image/'));
+    const videos = incoming.filter(f => f.type.startsWith('video/'));
     const uploaded = await uploadRepairMedia(id, images, videos, 'admin');
     if (uploaded.length > 0) {
       await fetch(`/api/repairs/${id}/media`, {
@@ -77,10 +120,33 @@ export default function AdminRepairPage() {
     setUploadLoading(false);
   }
 
+  async function handleDelete() {
+    if (deleteConfirm !== 'מחק') return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/repairs/${id}/delete`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('שגיאה במחיקה');
+      router.push('/admin/dashboard?deleted=1');
+    } catch {
+      setDeleting(false);
+      setShowDeleteModal(false);
+      alert('שגיאה במחיקה. נסו שוב.');
+    }
+  }
+
   function handleWhatsApp() {
-    if (!repair?.customer?.phone) return;
+    if (!repair) return;
     const msg = buildWhatsAppMessage(repair, window.location.origin);
-    window.open(buildWhatsAppUrl(repair.customer.phone, msg), '_blank');
+    // Send to admin's own number (for manual forwarding workflow)
+    window.open(buildWhatsAppUrl(ADMIN_PHONE, msg), '_blank');
+  }
+
+  async function handleCopyMsg() {
+    if (!repair) return;
+    const msg = buildWhatsAppMessage(repair, window.location.origin);
+    await navigator.clipboard.writeText(msg);
   }
 
   if (loading) return (
@@ -89,7 +155,6 @@ export default function AdminRepairPage() {
       <div className={styles.loading}><div className={styles.spinner} /></div>
     </>
   );
-
   if (!repair) return null;
 
   return (
@@ -97,7 +162,7 @@ export default function AdminRepairPage() {
       <AppHeader title="עריכת תיקון" backHref="/admin/dashboard" />
       <main className={styles.main}>
 
-        {/* Customer card */}
+        {/* Customer info */}
         <div className={styles.customerCard}>
           <div>
             <div className={styles.custName}>{repair.customer?.name}</div>
@@ -118,12 +183,9 @@ export default function AdminRepairPage() {
           <div className={styles.cardTitle}>שינוי סטטוס</div>
           <div className={styles.statusPills}>
             {STATUSES.map(s => (
-              <button
-                key={s}
+              <button key={s}
                 className={`${styles.pill} ${repair.status === s ? styles.pillActive : ''}`}
-                onClick={() => updateStatus(s)}
-                disabled={saving}
-              >
+                onClick={() => updateStatus(s)} disabled={saving}>
                 {STATUS_LABELS[s]}
               </button>
             ))}
@@ -135,17 +197,9 @@ export default function AdminRepairPage() {
           <div className={styles.cardTitle}>מחיר תיקון</div>
           <div className={styles.priceRow}>
             <span className={styles.shekel}>₪</span>
-            <input
-              className={styles.priceInput}
-              type="number"
-              min="0"
-              step="10"
-              value={price}
-              onChange={e => setPrice(e.target.value)}
-              inputMode="numeric"
-              dir="ltr"
-              placeholder="0"
-            />
+            <input className={styles.priceInput} type="number" min="0" step="10"
+              value={price} onChange={e => setPrice(e.target.value)}
+              inputMode="numeric" dir="ltr" placeholder="0" />
             <button className={styles.saveBtn} onClick={savePrice} disabled={saving}>
               {saved ? '✅' : 'שמור'}
             </button>
@@ -156,34 +210,17 @@ export default function AdminRepairPage() {
         <div className={styles.card}>
           <div className={styles.cardTitle}>תמונות וסרטונים</div>
           {repair.media && <MediaGallery media={repair.media} />}
-
-          <div className={styles.uploadRow}>
-            <button
-              className={styles.uploadBtn}
-              onClick={() => imgRef.current?.click()}
-              disabled={uploadLoading}
-            >
-              📸 תמונות
-            </button>
-            <button
-              className={styles.uploadBtn}
-              onClick={() => vidRef.current?.click()}
-              disabled={uploadLoading}
-            >
-              🎥 סרטון
-            </button>
-          </div>
-          {uploadLoading && <p className={styles.uploading}>מעלה...</p>}
-
-          <input ref={imgRef} type="file" accept="image/*" multiple hidden
-            onChange={e => handleMediaUpload(Array.from(e.target.files ?? []), [])} />
-          <input ref={vidRef} type="file" accept="video/*" multiple hidden
-            onChange={e => handleMediaUpload([], Array.from(e.target.files ?? []))} />
+          <button className={styles.uploadBtn}
+            onClick={() => mediaRef.current?.click()} disabled={uploadLoading}>
+            📎 {uploadLoading ? 'מעלה...' : 'הוסיפו תמונות / סרטונים'}
+          </button>
+          <input ref={mediaRef} type="file" accept="image/*,video/*" multiple hidden
+            onChange={handleMediaUpload} />
         </div>
 
-        {/* Delivery & dates */}
+        {/* Details */}
         <div className={styles.card}>
-          <div className={styles.cardTitle}>פרטי תיקון</div>
+          <div className={styles.cardTitle}>פרטים</div>
           <div className={styles.detailsGrid}>
             <div><div className={styles.infoKey}>מסירה</div><div className={styles.infoVal}>{repair.delivery_other || DELIVERY_LABELS[repair.delivery_location]}</div></div>
             <div><div className={styles.infoKey}>דחיפות</div><div className={styles.infoVal}>{repair.urgency === 'urgent' ? '🔴 דחוף' : '🟢 רגיל'}</div></div>
@@ -193,10 +230,91 @@ export default function AdminRepairPage() {
           </div>
         </div>
 
+        {/* Messages */}
+        <div className={styles.card}>
+          <div className={styles.cardTitle}>הודעות</div>
+          <div className={styles.messages}>
+            {messages.length === 0 && <p className={styles.noMessages}>אין הודעות</p>}
+            {messages.map(m => (
+              <div key={m.id}
+                className={`${styles.bubble} ${m.author_type === 'admin' ? styles.bubbleAdmin : styles.bubbleCustomer}`}>
+                <div className={styles.bubbleText}>{m.text}</div>
+                <div className={styles.bubbleTime}>
+                  {m.author_type === 'customer' ? '👤 לקוח · ' : '🔧 סדנא · '}
+                  {new Date(m.created_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                  {' '}
+                  {new Date(m.created_at).toLocaleDateString('he-IL', { day: 'numeric', month: 'numeric' })}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+          <div className={styles.msgInput}>
+            <input className={styles.msgField} type="text"
+              placeholder="כתבו תשובה ללקוח..." value={newMsg}
+              onChange={e => setNewMsg(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && !sendingMsg && sendAdminMessage()} />
+            <button className={styles.msgSend}
+              onClick={sendAdminMessage} disabled={sendingMsg || !newMsg.trim()}>
+              {sendingMsg ? '...' : 'שלח'}
+            </button>
+          </div>
+        </div>
+
         {/* WhatsApp */}
         <button className={styles.waBtn} onClick={handleWhatsApp}>
-          <WhatsAppIcon /> שלח עדכון ללקוח בוואטסאפ
+          <WhatsAppIcon /> שלח עדכון בוואטסאפ
         </button>
+        <button className={styles.copyBtn} onClick={handleCopyMsg}>
+          📋 העתק הודעה
+        </button>
+
+        {/* Danger zone */}
+        <div className={styles.dangerZone}>
+          <button className={styles.deleteBtn} onClick={() => { setShowDeleteModal(true); setDeleteConfirm(''); }}>
+            🗑 מחק תיקון לצמיתות
+          </button>
+        </div>
+
+        {/* Delete confirmation modal */}
+        {showDeleteModal && (
+          <div className={styles.modalOverlay} onClick={() => !deleting && setShowDeleteModal(false)}>
+            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+              <div className={styles.modalIcon}>⚠️</div>
+              <h2 className={styles.modalTitle}>מחיקה לצמיתות</h2>
+              <p className={styles.modalText}>
+                פעולה זו תמחק את התיקון של <strong>{repair?.customer?.name}</strong> לחלוטין —
+                כולל תמונות, הודעות ולוג סטטוסים. לא ניתן לשחזר.
+              </p>
+              <p className={styles.modalPrompt}>כתבו <strong>מחק</strong> לאישור:</p>
+              <input
+                className={styles.confirmInput}
+                type="text"
+                placeholder="מחק"
+                value={deleteConfirm}
+                onChange={e => setDeleteConfirm(e.target.value)}
+                autoFocus
+                dir="rtl"
+              />
+              <div className={styles.modalActions}>
+                <button
+                  className={styles.confirmDeleteBtn}
+                  onClick={handleDelete}
+                  disabled={deleteConfirm !== 'מחק' || deleting}
+                >
+                  {deleting ? 'מוחק...' : 'מחק לצמיתות'}
+                </button>
+                <button
+                  className={styles.cancelBtn}
+                  onClick={() => setShowDeleteModal(false)}
+                  disabled={deleting}
+                >
+                  ביטול
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div style={{ height: 24 }} />
       </main>

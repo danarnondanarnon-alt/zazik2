@@ -16,12 +16,12 @@ export default function LandingPage() {
         <Link href="/customer/login" className={`${styles.btn} ${styles.btnPrimary}`}>
           כניסת לקוח
         </Link>
-        <Link href="/admin" className={`${styles.btn} ${styles.btnOutline}`}>
-          כניסת מנהל 🔧
-        </Link>
       </div>
 
-      <p className={styles.footer}>פרדס חנה | חוף שדות ים</p>
+      {/* Invisible admin entry - just a dot in the footer */}
+      <div className={styles.adminFooter}>
+        <Link href="/admin" className={styles.adminLink} aria-label="admin">·</Link>
+      </div>
     </main>
   );
 }

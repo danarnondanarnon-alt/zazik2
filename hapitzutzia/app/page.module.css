@@ -55,7 +55,7 @@
   max-width: 400px;
   width: 100%;
   margin: 0 auto;
-  padding-bottom: 40px;
+  padding-bottom: 20px;
   animation: fadeUp 0.5s 0.1s ease both;
 }
 
@@ -64,7 +64,7 @@
   width: 100%;
   padding: 18px 24px;
   border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-rubik), sans-serif;
   font-size: 18px;
   font-weight: 700;
   text-align: center;
@@ -89,8 +89,21 @@
 .btnOutline:hover { border-color: var(--paper); }
 
 .footer {
-  text-align: center;
-  font-size: 13px;
-  color: #444;
-  padding-bottom: 32px;
+  display: none;
 }
+
+.adminFooter {
+  text-align: center;
+  padding-bottom: 24px;
+}
+
+.adminLink {
+  font-size: 18px;
+  color: #1a1a1a;
+  text-decoration: none;
+  padding: 12px 24px;
+  display: inline-block;
+  line-height: 1;
+  user-select: none;
+}
+.adminLink:hover { color: #2a2a2a; }

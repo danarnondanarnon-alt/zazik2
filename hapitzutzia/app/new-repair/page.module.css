@@ -18,7 +18,7 @@
   padding: 15px 16px;
   border: 2px solid var(--sand);
   border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-rubik), sans-serif;
   font-size: 16px;
   color: var(--ink);
   background: #fafaf8;
@@ -29,6 +29,16 @@
   outline: none;
   border-color: var(--rust);
   background: #fff;
+}
+.locked {
+  background: #f0f0ec;
+  color: var(--mid);
+  cursor: not-allowed;
+}
+.lockedHint {
+  font-size: 12px;
+  color: var(--mid);
+  margin-top: 4px;
 }
 
 .textarea { min-height: 100px; resize: vertical; }
@@ -41,13 +51,12 @@
   border-radius: var(--radius);
   border: 2px solid var(--sand);
   background: #fafaf8;
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-rubik), sans-serif;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
 }
-
 .urgent  { border-color: var(--rust); background: var(--rust-light); color: var(--rust); }
 .normal  { border-color: var(--ok);   background: var(--ok-light);   color: var(--ok);   }
 
@@ -57,7 +66,7 @@
   border: 2px dashed var(--sand-dark);
   border-radius: var(--radius);
   background: #fafaf8;
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-rubik), sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: var(--steel);
@@ -65,7 +74,47 @@
   text-align: center;
   transition: all 0.15s;
 }
-.uploadBtn:active { border-color: var(--rust); }
+.uploadBtn:active { border-color: var(--rust); background: #fff; }
+
+.fileChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--sand);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  max-width: 200px;
+}
+.chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chipRemove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--mid);
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.chipRemove:hover { color: var(--rust); }
+
+.mediaHint {
+  font-size: 12px;
+  color: var(--mid);
+  margin-top: 6px;
+}
 
 .error {
   margin-top: 14px;
@@ -83,7 +132,7 @@
   color: #fff;
   border: none;
   border-radius: var(--radius);
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-rubik), sans-serif;
   font-size: 18px;
   font-weight: 700;
   cursor: pointer;

@@ -1,36 +1,54 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import AppHeader from '@/components/ui/AppHeader';
-import { validateIsraeliPhone, normalizeIsraeliPhone } from '@/lib/utils';
+import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { uploadRepairMedia, validateFiles } from '@/lib/media';
 import { BOARD_TYPE_LABELS, BoardType, UrgencyLevel, DeliveryLocation } from '@/lib/types';
+import { validateIsraeliPhone, normalizeIsraeliPhone } from '@/lib/utils';
 import styles from './page.module.css';
 
 const BOARD_TYPES = Object.entries(BOARD_TYPE_LABELS) as [BoardType, string][];
 
-export default function NewRepairPage() {
+export default function AdminNewRepairPage() {
   const router = useRouter();
 
-  const [name, setName]           = useState('');
-  const [phone, setPhone]         = useState('');
-  const [phoneLocked, setPhoneLocked] = useState(false);
-  const [boardType, setBoardType] = useState<BoardType | ''>('');
+  const [phone, setPhone]           = useState('');
+  const [name, setName]             = useState('');
+  const [existingCustomer, setExistingCustomer] = useState<{ id: string; name: string } | null>(null);
+  const [lookingUp, setLookingUp]   = useState(false);
+  const [boardType, setBoardType]   = useState<BoardType | ''>('');
   const [description, setDescription] = useState('');
-  const [urgency, setUrgency]     = useState<UrgencyLevel>('normal');
-  const [delivery, setDelivery]   = useState<DeliveryLocation>('pardess_hanna');
+  const [urgency, setUrgency]       = useState<UrgencyLevel>('normal');
+  const [delivery, setDelivery]     = useState<DeliveryLocation>('pardess_hanna');
   const [deliveryOther, setDeliveryOther] = useState('');
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
-  const mediaRef = useRef<HTMLInputElement>(null);
+  const [error, setError]           = useState('');
+  const [loading, setLoading]       = useState(false);
+  const mediaRef                    = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const sPhone = sessionStorage.getItem('customer_phone') ?? '';
-    const sName  = sessionStorage.getItem('customer_name') ?? '';
-    if (sPhone) { setPhone(sPhone); setPhoneLocked(true); }
-    if (sName)  setName(sName);
+    if (!isAdminAuthenticated()) router.replace('/admin');
+  }, [router]);
+
+  const lookupCustomer = useCallback(async (rawPhone: string) => {
+    const normalized = normalizeIsraeliPhone(rawPhone);
+    if (normalized.length < 9) { setExistingCustomer(null); return; }
+    setLookingUp(true);
+    const data = await fetch(`/api/customers?phone=${encodeURIComponent(normalized)}`).then(r => r.json());
+    if (data && data.id) {
+      setExistingCustomer(data);
+      setName(data.name);
+    } else {
+      setExistingCustomer(null);
+    }
+    setLookingUp(false);
   }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => { if (phone) lookupCustomer(phone); }, 500);
+    return () => clearTimeout(t);
+  }, [phone, lookupCustomer]);
 
   function handleMediaChange(e: React.ChangeEvent<HTMLInputElement>) {
     const incoming = Array.from(e.target.files ?? []);
@@ -42,15 +60,11 @@ export default function NewRepairPage() {
     e.target.value = '';
   }
 
-  function removeFile(idx: number) {
-    setMediaFiles(prev => prev.filter((_, i) => i !== idx));
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    if (!name.trim())        return setError('נא להזין שם');
     if (!validateIsraeliPhone(phone)) return setError('מספר טלפון לא תקין');
+    if (!name.trim())        return setError('נא להזין שם לקוח');
     if (!boardType)          return setError('נא לבחור סוג גלשן');
     if (!description.trim()) return setError('נא לתאר את התיקון');
 
@@ -78,7 +92,7 @@ export default function NewRepairPage() {
       const { repair } = await res.json();
 
       if (mediaFiles.length > 0) {
-        const uploaded = await uploadRepairMedia(repair.id, images, videos, 'customer');
+        const uploaded = await uploadRepairMedia(repair.id, images, videos, 'admin');
         if (uploaded.length > 0) {
           await fetch(`/api/repairs/${repair.id}/media`, {
             method: 'POST',
@@ -88,9 +102,7 @@ export default function NewRepairPage() {
         }
       }
 
-      sessionStorage.setItem('customer_name', name.trim());
-      sessionStorage.setItem('customer_phone', normalizeIsraeliPhone(phone));
-      router.push(`/repair/${repair.id}?new=1`);
+      router.push(`/admin/repairs/${repair.id}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'שגיאה לא ידועה');
     } finally {
@@ -103,23 +115,31 @@ export default function NewRepairPage() {
 
   return (
     <>
-      <AppHeader title="בקשת תיקון חדשה" backHref="/customer/dashboard" />
+      <AppHeader title="תיקון חדש" backHref="/admin/dashboard" />
       <main className={styles.main}>
         <form onSubmit={handleSubmit}>
 
-          <label className={styles.label}>שם מלא</label>
+          <label className={styles.label}>טלפון לקוח</label>
+          <div className={styles.phoneRow}>
+            <input
+              className={styles.input}
+              type="tel" placeholder="050-0000000" dir="ltr" inputMode="tel"
+              value={phone} onChange={e => setPhone(e.target.value)}
+            />
+            {lookingUp && <span className={styles.lookupSpinner} />}
+          </div>
+          {existingCustomer && (
+            <div className={styles.customerFound}>
+              ✅ לקוח קיים: <strong>{existingCustomer.name}</strong>
+            </div>
+          )}
+          {phone && !lookingUp && !existingCustomer && normalizeIsraeliPhone(phone).length >= 9 && (
+            <div className={styles.customerNew}>➕ לקוח חדש יווצר</div>
+          )}
+
+          <label className={styles.label}>שם לקוח</label>
           <input className={styles.input} type="text" placeholder="ישראל ישראלי"
             value={name} onChange={e => setName(e.target.value)} />
-
-          <label className={styles.label}>טלפון</label>
-          <input
-            className={`${styles.input} ${phoneLocked ? styles.locked : ''}`}
-            type="tel" placeholder="050-0000000" dir="ltr" inputMode="tel"
-            value={phone}
-            onChange={e => { if (!phoneLocked) setPhone(e.target.value); }}
-            readOnly={phoneLocked}
-          />
-          {phoneLocked && <p className={styles.lockedHint}>🔒 הטלפון ננעל לפי הכניסה שלך</p>}
 
           <label className={styles.label}>סוג גלשן</label>
           <select className={styles.input} value={boardType}
@@ -131,7 +151,7 @@ export default function NewRepairPage() {
           </select>
 
           <label className={styles.label}>תיאור התיקון</label>
-          <textarea className={styles.textarea} placeholder="תארו את הנזק..."
+          <textarea className={styles.textarea} placeholder="תיאור הנזק..."
             value={description} onChange={e => setDescription(e.target.value)} />
 
           <label className={styles.label}>רמת דחיפות</label>
@@ -166,22 +186,10 @@ export default function NewRepairPage() {
           <input ref={mediaRef} type="file" accept="image/*,video/*" multiple hidden
             onChange={handleMediaChange} />
 
-          {mediaFiles.length > 0 && (
-            <div className={styles.fileChips}>
-              {mediaFiles.map((f, i) => (
-                <div key={i} className={styles.chip}>
-                  <span>{f.type.startsWith('video/') ? '🎥' : '📸'} {f.name.slice(0, 22)}</span>
-                  <button type="button" onClick={() => removeFile(i)} className={styles.chipRemove}>✕</button>
-                </div>
-              ))}
-            </div>
-          )}
-          <p className={styles.mediaHint}>עד 10 תמונות (5MB) · עד 2 סרטונים (20MB)</p>
-
           {error && <p className={styles.error}>{error}</p>}
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>
-            {loading ? 'שולח...' : 'שלח בקשת תיקון →'}
+            {loading ? 'יוצר תיקון...' : 'צור תיקון →'}
           </button>
         </form>
         <div style={{ height: 32 }} />
